@@ -13,6 +13,7 @@ import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+import 'contents/availableOnGitHubButton.dart';
 import 'contents/betteryCharging.dart';
 import 'contents/bigNBigger.dart';
 
@@ -65,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> with AnimCalculator {
         _size = MediaQuery.of(context).size;
         scrollStatusNotifier.size = _size!;
         // scrollHeight = _size!.height * 5;
-        scrollHeight = _size!.height * 10;
+        scrollHeight = _size!.height * 7.8;
         if (kDebugMode) {
           print(scrollHeight);
         }
@@ -102,10 +103,11 @@ class _MyHomePageState extends State<MyHomePage> with AnimCalculator {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       SizedBox(
-                        height: scrollStatusNotifier.percentageToHeight(2.5),
-                      ),
-                      SizedBox(
                         height: scrollHeight,
+                      ),
+                      AvailableOnGithubButton(),
+                      SizedBox(
+                        height: scrollStatusNotifier.percentageToHeight(0.5),
                       ),
                     ],
                   ),
