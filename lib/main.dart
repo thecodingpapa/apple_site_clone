@@ -6,9 +6,7 @@ import 'package:apple_site_clone/contents/scrollVideoPlayer.dart';
 import 'package:apple_site_clone/providers/scrollStatusNotifier.dart';
 import 'package:apple_site_clone/siteAppbar.dart';
 import 'package:apple_site_clone/utils/animCalculator.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:format/format.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -49,14 +47,35 @@ class _MyHomePageState extends State<MyHomePage> with AnimCalculator {
   Size? _size;
   double? scrollHeight;
   bool scrolling = false;
+  Color backgroundColor = Colors.white;
+  bool fadeIn = false;
 
   @override
   void initState() {
     _scrollController = ScrollController();
     _scrollController.addListener(() {
       scrollStatusNotifier.setScrollPos(_scrollController.offset);
+      changeBackgroundColor();
+    });
+
+    Future.delayed(const Duration(milliseconds: 500)).then((value) {
+      setState(() {
+        fadeIn = true;
+      });
     });
     super.initState();
+  }
+
+  void changeBackgroundColor() {
+    if (backgroundColor == Colors.white &&
+        scrollStatusNotifier.scrollPercentage > 6.3) {
+      backgroundColor = Colors.black;
+      setState(() {});
+    } else if (backgroundColor == Colors.black &&
+        scrollStatusNotifier.scrollPercentage < 6.1) {
+      backgroundColor = Colors.white;
+      setState(() {});
+    }
   }
 
   @override
@@ -66,12 +85,9 @@ class _MyHomePageState extends State<MyHomePage> with AnimCalculator {
         _size = MediaQuery.of(context).size;
         scrollStatusNotifier.size = _size!;
         // scrollHeight = _size!.height * 5;
-        scrollHeight = _size!.height * 7.8;
-        if (kDebugMode) {
-          print(scrollHeight);
-        }
+        scrollHeight = _size!.height * 7.3;
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: backgroundColor,
           floatingActionButton: scrolling
               ? null
               : FloatingActionButton.small(
@@ -85,35 +101,43 @@ class _MyHomePageState extends State<MyHomePage> with AnimCalculator {
                           });
                         }));
                   },
-                  child: Icon(Icons.play_arrow),
+                  child: const Icon(Icons.play_arrow),
                 ),
-          body: Center(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                buildTitle(),
-                RevealIPhones(size: _size!),
-                Emergency(size: _size!),
-                BetteryCharging(size: _size!),
-                BigNBigger(size: _size!),
-                ScrollVideoPlayer(size: _size!),
-                SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        height: scrollHeight,
-                      ),
-                      AvailableOnGithubButton(),
-                      SizedBox(
-                        height: scrollStatusNotifier.percentageToHeight(0.5),
-                      ),
-                    ],
+          body: AnimatedOpacity(
+            opacity: fadeIn ? 1 : 0,
+            duration: const Duration(seconds: 1),
+            child: Center(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  buildTitle(),
+                  RevealIPhones(size: _size!),
+                  Emergency(size: _size!),
+                  BetteryCharging(size: _size!),
+                  BigNBigger(size: _size!),
+                  ScrollVideoPlayer(size: _size!),
+                  SingleChildScrollView(
+                    controller: _scrollController,
+                    physics:
+                        fadeIn ? null : const NeverScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(
+                          height: scrollHeight,
+                        ),
+                        SalesSection(
+                          size: _size!,
+                        ),
+                        // SizedBox(
+                        //   height: scrollStatusNotifier.percentageToHeight(0.5),
+                        // ),
+                      ],
+                    ),
                   ),
-                ),
-                const SiteAppbar(),
-              ],
+                  const SiteAppbar(),
+                ],
+              ),
             ),
           ),
         );

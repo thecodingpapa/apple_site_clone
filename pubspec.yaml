@@ -40,6 +40,8 @@ dependencies:
   rive: ^0.10.1
   simple_gradient_text: ^1.2.4
   format: ^1.2.0
+  url_launcher: ^6.1.9
+  animated_text_kit: ^4.2.2
 
 
 dev_dependencies:
